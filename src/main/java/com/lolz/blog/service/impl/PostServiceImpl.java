@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import org.modelmapper.ModelMapper;
 
 
 import java.util.List;
@@ -23,12 +24,14 @@ import java.util.stream.Collectors;
 @Service
 
 public class PostServiceImpl implements PostService {
-  private final PostRepository postRepository;
+  private  PostRepository postRepository;
+  private ModelMapper mapper;
 
-  public PostServiceImpl(PostRepository postRepository) {
+
+  public PostServiceImpl(PostRepository postRepository, ModelMapper mapper) {
     this.postRepository = postRepository;
+    this.mapper = mapper;
   }
-
 
   //create post
   @Override
@@ -43,7 +46,7 @@ public class PostServiceImpl implements PostService {
   }
 
 
-
+//Get all posts
 
   @Override
   public PostResponse getAllPosts(int pageNo, int pageSize,String sortBy,String sortDir){
@@ -70,7 +73,7 @@ public class PostServiceImpl implements PostService {
   }
 
 
-  //get all posts
+
 
 
   //get post by id
@@ -114,21 +117,11 @@ public class PostServiceImpl implements PostService {
 
 
   private PostDto mapToDTO(Post post) {
-    PostDto postDto = new PostDto();
-    postDto.setId(post.getId());
-    postDto.setTitle(post.getTitle());
-    postDto.setDescription(post.getDescription());
-    postDto.setContent(post.getContent());
-    return postDto;
+    return mapper.map(post, PostDto.class);
   }
 
   private Post mapToEntity(PostDto postDto) {
-    Post post = new Post();
-    post.setId(postDto.getId());
-    post.setTitle(postDto.getTitle());
-    post.setDescription(postDto.getDescription());
-    post.setContent(postDto.getContent());
-    return post;
+    return mapper.map(postDto, Post.class);
   }
 
 }

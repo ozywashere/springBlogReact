@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "posts",uniqueConstraints={@UniqueConstraint(columnNames={"title"})})
+@Table(name = "posts", uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
 @Data
 @AllArgsConstructor
- @NoArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class Post {
@@ -18,18 +18,18 @@ public class Post {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "title",nullable = false)
+  @Column(name = "title", nullable = false)
   private String title;
 
-  @Column(name = "description",nullable = false)
+  @Column(name = "description", nullable = false)
   private String description;
 
-  @Column(name = "content",nullable = false)
+  @Column(name = "content", nullable = false)
   private String content;
 
-  @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 
-  private Set<Comment> comments=new HashSet<>();
+  private Set<Comment> comments = new HashSet<>();
 
 
 }
