@@ -3,18 +3,25 @@ package com.lolz.blog.service.impl;
 import com.lolz.blog.entity.Post;
 import com.lolz.blog.exception.ResourceNotFoundException;
 import com.lolz.blog.payload.PostDto;
+import com.lolz.blog.payload.PostResponse;
 import com.lolz.blog.repository.PostRepository;
 import com.lolz.blog.service.PostService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+
 public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
 
@@ -35,12 +42,35 @@ public class PostServiceImpl implements PostService {
     return postResponse;
   }
 
-  //get all posts
+
+
+
   @Override
-  public List<PostDto> getAllPosts() {
-    List<Post> posts = postRepository.findAll();
-    return posts.stream().map(post ->mapToDTO(post) ).collect(Collectors.toList());
+  public PostResponse getAllPosts(int pageNo, int pageSize,String sortBy,String sortDir){
+      Sort sort=sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize,sort);
+
+    Page<Post> posts = postRepository.findAll(pageable);
+
+    List<Post> listOfPosts = posts.getContent();
+
+    List<PostDto> content = listOfPosts.stream().map(this::mapToDTO).collect(Collectors.toList());
+
+    PostResponse postResponse = new PostResponse();
+    postResponse.setContent(content);
+    postResponse.setPageNo(posts.getNumber());
+    postResponse.setPageSize(posts.getSize());
+    postResponse.setTotalElements(posts.getTotalElements());
+    postResponse.setTotalPages(posts.getTotalPages());
+    postResponse.setLast(posts.isLast());
+
+    return postResponse;
+
   }
+
+
+  //get all posts
 
 
   //get post by id
@@ -71,11 +101,10 @@ public class PostServiceImpl implements PostService {
   }
 
 
-
   //delete post
   @Override
   @DeleteMapping("/{id}")
-  public void deletePost(@PathVariable (name="id") long id) {
+  public void deletePost(@PathVariable(name = "id") long id) {
     //get post by id
     Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
     //delete post

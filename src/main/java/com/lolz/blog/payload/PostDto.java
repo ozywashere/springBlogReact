@@ -1,8 +1,12 @@
 package com.lolz.blog.payload;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class PostDto {
   private long id;
   private String title;

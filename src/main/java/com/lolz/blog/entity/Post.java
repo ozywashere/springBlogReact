@@ -1,15 +1,18 @@
 package com.lolz.blog.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts",uniqueConstraints={@UniqueConstraint(columnNames={"title"})})
 @Data
 @AllArgsConstructor
  @NoArgsConstructor
+@Getter
+@Setter
 public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +26,10 @@ public class Post {
 
   @Column(name = "content",nullable = false)
   private String content;
+
+  @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+
+  private Set<Comment> comments=new HashSet<>();
+
 
 }
